@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stamp cards — features</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #111111;
+      --paper: #f1f0e8;
+      --type: #151515;
+      --muted: #6e6d68;
+    }
+
+    *,
+    *::before,
+    *::after { box-sizing: border-box; }
+
+    html, body { margin: 0; }
+
+    body {
+      background: var(--ink);
+      font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    /* ---------- Section ---------- */
+    .stamps {
+      /* card is 228 x 377 on a 960 x 540 frame */
+      --w: min(23.75vw, 42.2vh);
+      height: 100vh;
+      height: 100svh;
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ink);
+      overflow: hidden;
+    }
+
+    .stamps__row {
+      display: flex;
+      gap: calc(var(--w) * 0.246);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    /* ---------- Card ---------- */
+    .stamp {
+      flex: none;
+      width: var(--w);
+      aspect-ratio: 228 / 377;
+      container-type: inline-size;
+    }
+
+    .stamp__face {
+      /* perforation pitch and hole radius */
+      --s: 2.2cqw;
+      --r: 0.7cqw;
+      --hole: #0000 var(--r), #000 calc(var(--r) + 0.4px);
+
+      height: 100%;
+      display: grid;
+      grid-template-rows: 49.3% 50.7%;
+      background: var(--paper);
+      color: var(--type);
+
+      -webkit-mask:
+        linear-gradient(#000 0 0) center / calc(100% - var(--s)) calc(100% - var(--s)) no-repeat,
+        radial-gradient(circle at 50% 0, var(--hole)) left top / var(--s) calc(var(--s) / 2) round no-repeat,
+        radial-gradient(circle at 50% 100%, var(--hole)) left bottom / var(--s) calc(var(--s) / 2) round no-repeat,
+        radial-gradient(circle at 0 50%, var(--hole)) left top / calc(var(--s) / 2) var(--s) no-repeat round,
+        radial-gradient(circle at 100% 50%, var(--hole)) right top / calc(var(--s) / 2) var(--s) no-repeat round;
+      mask:
+        linear-gradient(#000 0 0) center / calc(100% - var(--s)) calc(100% - var(--s)) no-repeat,
+        radial-gradient(circle at 50% 0, var(--hole)) left top / var(--s) calc(var(--s) / 2) round no-repeat,
+        radial-gradient(circle at 50% 100%, var(--hole)) left bottom / var(--s) calc(var(--s) / 2) round no-repeat,
+        radial-gradient(circle at 0 50%, var(--hole)) left top / calc(var(--s) / 2) var(--s) no-repeat round,
+        radial-gradient(circle at 100% 50%, var(--hole)) right top / calc(var(--s) / 2) var(--s) no-repeat round;
+    }
+
+    .stamp__text {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10.6cqw 7.9cqw 9.2cqw;
+      min-height: 0;
+    }
+
+    .stamp__head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .stamp__logo {
+      display: block;
+      width: 13.6cqw;
+      height: auto;
+      margin-top: 0.4cqw;
+      fill: currentColor;
+    }
+
+    .stamp__num {
+      font-size: 9.6cqw;
+      font-weight: 300;
+      line-height: 0.8;
+      letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stamp__title {
+      margin: 0;
+      font-size: 7.45cqw;
+      font-weight: 500;
+      line-height: 1.24;
+      letter-spacing: -0.012em;
+    }
+
+    .stamp__sub {
+      margin: 4.2cqw 0 0;
+      font-size: 4.6cqw;
+      font-weight: 400;
+      line-height: 1.28;
+      color: var(--muted);
+    }
+
+    .stamp__art {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      background: #d9d6c4;
+    }
+
+    .stamp__art video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* second copy used to dissolve the end of a clip back into its start */
+    .stamp__art video.is-fading { transition: opacity 1.2s linear; }
+
+    /* middle card: artwork on top, logo row at the bottom */
+    .stamp--flip .stamp__face { grid-template-rows: 49.3% 50.7%; }
+    .stamp--flip .stamp__art { grid-row: 1; }
+    .stamp--flip .stamp__text {
+      grid-row: 2;
+      flex-direction: column-reverse;
+      padding: 5.6cqw 7.9cqw 7.4cqw;
+    }
+    .stamp--flip .stamp__head { align-items: flex-end; }
+    .stamp--flip .stamp__logo { margin: 0 0 0.4cqw; }
+
+    /* ---------- Mobile: swipeable row, still one viewport tall ---------- */
+    @media (max-width: 720px) {
+      .stamps {
+        --w: min(72vw, 43vh);
+        justify-content: flex-start;
+      }
+
+      .stamps__row {
+        width: 100%;
+        gap: calc(var(--w) * 0.12);
+        padding: 0 calc((100vw - var(--w)) / 2);
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .stamps__row::-webkit-scrollbar { display: none; }
+
+      .stamp { scroll-snap-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="stamps" aria-labelledby="stamps-title">
+    <h2 id="stamps-title" class="sr-only">What your co-pilot does</h2>
+
+    <ul class="stamps__row">
+
+      <li class="stamp">
+        <article class="stamp__face">
+          <div class="stamp__text">
+            <div class="stamp__head">
+              <svg class="stamp__logo" viewBox="0 0 32 18" aria-hidden="true">
+                <path d="M15.2 0v7.6H0zM16.8 0v7.6H32zM0 10.2h15.2v2.6L0 18zM32 10.2H16.8v2.6L32 18z" />
+              </svg>
+              <span class="stamp__num">01</span>
+            </div>
+            <div>
+              <h3 class="stamp__title">Your calm,<br />Personal co-pilot.</h3>
+              <p class="stamp__sub">Helping you stay on track without<br />the mental load.</p>
+            </div>
+          </div>
+          <div class="stamp__art">
+            <video
+              src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_091715_79f8fcad-f9d1-486c-9d45-6ddb50b041e1.mp4"
+              poster="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_055417_c2895c34-f601-4a47-b15a-2f0284d653c2.png"
+              autoplay muted loop playsinline preload="auto" aria-hidden="true" data-xfade></video>
+          </div>
+        </article>
+      </li>
+
+      <li class="stamp stamp--flip">
+        <article class="stamp__face">
+          <div class="stamp__text">
+            <div class="stamp__head">
+              <svg class="stamp__logo" viewBox="0 0 32 18" aria-hidden="true">
+                <path d="M15.2 0v7.6H0zM16.8 0v7.6H32zM0 10.2h15.2v2.6L0 18zM32 10.2H16.8v2.6L32 18z" />
+              </svg>
+              <span class="stamp__num">02</span>
+            </div>
+            <div>
+              <h3 class="stamp__title">Making everyday<br />Planning feel easier.</h3>
+              <p class="stamp__sub">Organizes your day so nothing slips<br />through.</p>
+            </div>
+          </div>
+          <div class="stamp__art">
+            <video
+              src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_091715_f451d022-9ec8-4f33-957d-3a65063afc25.mp4"
+              poster="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_055418_4e430e6d-8913-41c6-abd2-f7e66eab915a.png"
+              autoplay muted loop playsinline preload="auto" aria-hidden="true" data-xfade></video>
+          </div>
+        </article>
+      </li>
+
+      <li class="stamp">
+        <article class="stamp__face">
+          <div class="stamp__text">
+            <div class="stamp__head">
+              <svg class="stamp__logo" viewBox="0 0 32 18" aria-hidden="true">
+                <path d="M15.2 0v7.6H0zM16.8 0v7.6H32zM0 10.2h15.2v2.6L0 18zM32 10.2H16.8v2.6L32 18z" />
+              </svg>
+              <span class="stamp__num">03</span>
+            </div>
+            <div>
+              <h3 class="stamp__title">Taking care of the<br />little things you forget.</h3>
+              <p class="stamp__sub">Keeps track of tasks and reminders<br />so you don’t have to.</p>
+            </div>
+          </div>
+          <div class="stamp__art">
+            <video
+              src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_100245_78ea336e-7cdf-4502-a759-61ac568b52eb.mp4"
+              poster="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261010_055418_d745c677-ca0e-486a-b758-fc9487ffecee.png"
+              autoplay muted loop playsinline preload="auto" aria-hidden="true" data-xfade></video>
+          </div>
+        </article>
+      </li>
+
+    </ul>
+  </section>
+
+  <script>
+    const FADE = 1.2; // seconds of overlap, matches .is-fading
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const live = new Set(document.querySelectorAll('.stamp__art video'));
+
+    // Clips whose motion has a direction (zoom, drifting clouds) can't end on
+    // their first frame, so two copies take turns and dissolve into each other.
+    document.querySelectorAll('video[data-xfade]').forEach(a => {
+      const b = a.cloneNode();
+      b.removeAttribute('autoplay');
+      b.style.opacity = 0;
+      a.loop = b.loop = false;
+      a.after(b);
+
+      const hand = (from, to) => {
+        let busy = false;
+        from.addEventListener('timeupdate', () => {
+          if (busy || !live.has(from) || !from.duration || from.duration - from.currentTime > FADE) return;
+          busy = true;
+          to.currentTime = 0;
+          to.play().then(() => {
+            to.style.zIndex = 2;
+            from.style.zIndex = 1;
+            to.classList.add('is-fading');
+            to.style.opacity = 1;
+            live.add(to);
+            setTimeout(() => {
+              to.classList.remove('is-fading');
+              from.style.opacity = 0;
+              from.pause();
+              live.delete(from);
+              busy = false;
+            }, FADE * 1000 + 80);
+          }).catch(() => { busy = false; });
+        });
+        // If the twin never took over (e.g. playback was blocked), just restart.
+        from.addEventListener('ended', () => {
+          if (!busy && live.has(from)) { from.currentTime = 0; from.play().catch(() => {}); }
+        });
+      };
+      hand(a, b);
+      hand(b, a);
+    });
+
+    // Hold the artwork still for visitors who ask for reduced motion.
+    const sync = () => live.forEach(v => {
+      if (calm.matches) { v.removeAttribute('autoplay'); v.pause(); }
+      else { v.play().catch(() => {}); }
+    });
+    calm.addEventListener('change', sync);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) sync(); });
+    sync();
+  </script>
+</body>
+</html>
